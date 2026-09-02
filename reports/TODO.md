@@ -1,0 +1,1 @@
+ | **grill-with-docs** | 通过深度访谈帮助你与 Agent 对齐，同时构建项目的领域模型、优化术语、更新 CONTEXT.md 和 ADR | [→ 详细报告](engineering/grill-with-docs/report.md) |
