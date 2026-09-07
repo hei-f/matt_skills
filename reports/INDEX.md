@@ -31,11 +31,11 @@ Skills 按调用方式分为两种：
 
 | # | Skill | 简要描述 | 详细报告 |
 |---|-------|---------|---------|
-| 1 | **ask-matt** | 询问哪个 Skill 或流程适合你的情况，是本仓库用户调用 Skills 的路由器 | [→ 详细报告](engineering/ask-matt/report.md) |
+| 1 | **ask-matt（trash）** | 询问哪个 Skill 或流程适合你的情况，是本仓库用户调用 Skills 的路由器 | [→ 详细报告](engineering/ask-matt/report.md) |
 | 2 | **grill-with-docs** | 通过深度访谈帮助你与 Agent 对齐，同时构建项目的领域模型、优化术语、更新 CONTEXT.md 和 ADR | [→ 详细报告](engineering/grill-with-docs/report.md) |
 | 3 | **triage** | 通过状态机将 Issue 在分诊角色之间流转 | [→ 详细报告](engineering/triage/report.md) |
 | 4 | **improve-codebase-architecture** | 扫描代码库寻找深化（deepening）机会，以可视化 HTML 报告呈现，然后对你选择的候选进行深入访谈 | [→ 详细报告](engineering/improve-codebase-architecture/report.md) |
-| 5 | **setup-matt-pocock-skills** | 为工程 Skills 配置仓库（Issue 追踪器、分诊标签、领域文档布局），每个仓库只需运行一次 | [→ 详细报告](engineering/setup-matt-pocock-skills/report.md) |
+| 5 | **setup-matt-pocock-skills（trash）** | 为工程 Skills 配置仓库（Issue 追踪器、分诊标签、领域文档布局），每个仓库只需运行一次 | [→ 详细报告](engineering/setup-matt-pocock-skills/report.md) |
 | 6 | **to-spec** | 将当前对话转化为 Spec 并发布到 Issue 追踪器，无需访谈，直接综合已讨论的内容 | [→ 详细报告](engineering/to-spec/report.md) |
 | 7 | **to-tickets** | 将任何计划、Spec 或对话分解为一组追踪子弹（tracer-bullet）工单，每个工单声明其阻塞边 | [→ 详细报告](engineering/to-tickets/report.md) |
 | 8 | **implement** | 按照 Spec 或工单集合实现工作，在预先约定的边界上驱动 `/tdd`，提交前以 `/code-review` 收尾 | [→ 详细报告](engineering/implement/report.md) |
@@ -80,7 +80,7 @@ Skills 按调用方式分为两种：
 
 ---
 
-## 三、Misc（杂项 Skills）
+## 三、Misc（trash）
 
 保留但很少使用，不在插件中推广。
 
@@ -93,7 +93,7 @@ Skills 按调用方式分为两种：
 
 ---
 
-## 四、In-Progress（开发中 Skills）
+## 四、In-Progress（trash）
 
 Beta 阶段。这些 Skills 公开征求反馈，可能随时变更或消失，不在插件和主 README 中展示。
 
