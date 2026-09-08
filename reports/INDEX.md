@@ -33,7 +33,6 @@ Skills 按调用方式分为两种：
 |---|-------|---------|---------|
 | 1 | **ask-matt（trash）** | 询问哪个 Skill 或流程适合你的情况，是本仓库用户调用 Skills 的路由器 | [→ 详细报告](engineering/ask-matt/report.md) |
 | 3 | **triage** | 通过状态机将 Issue 在分诊角色之间流转 | [→ 详细报告](engineering/triage/report.md) |
-| 4 | **improve-codebase-architecture** | 扫描代码库寻找深化（deepening）机会，以可视化 HTML 报告呈现，然后对你选择的候选进行深入访谈 | [→ 详细报告](engineering/improve-codebase-architecture/report.md) |
 | 5 | **setup-matt-pocock-skills（trash）** | 为工程 Skills 配置仓库（Issue 追踪器、分诊标签、领域文档布局），每个仓库只需运行一次 | [→ 详细报告](engineering/setup-matt-pocock-skills/report.md) |
 | 7 | **to-tickets** | 将任何计划、Spec 或对话分解为一组追踪子弹（tracer-bullet）工单，每个工单声明其阻塞边 | [→ 详细报告](engineering/to-tickets/report.md) |
 | 8 | **implement** | 按照 Spec 或工单集合实现工作，在预先约定的边界上驱动 `/tdd`，提交前以 `/code-review` 收尾 | [→ 详细报告](engineering/implement/report.md) |
@@ -44,9 +43,7 @@ Skills 按调用方式分为两种：
 | # | Skill | 简要描述 | 详细报告 |
 |---|-------|---------|---------|
 | 13 | **tdd** | 红-绿-重构循环的测试驱动开发，一次一个垂直切片地构建功能或修复 Bug | [→ 详细报告](engineering/tdd/report.md) |
-| 15 | **codebase-design** | 设计深层模块的共享纪律和词汇：小接口背后包含大量行为，放置在干净的接缝处，可通过该接口测试 | [→ 详细报告](engineering/codebase-design/report.md) |
 | 16 | **code-review** | 自固定点以来对 diff 的双轴审查：**标准轴**（是否遵循仓库编码标准 + Fowler 坏味道基线？）和 **Spec 轴**（是否忠实实现了原始 Issue/Spec？），作为并行子 Agent 运行 | [→ 详细报告](engineering/code-review/report.md) |
-| 18 | **wizard** | 生成交互式 bash 向导，引导人类完成只有他们能执行的步骤：配置基础设施、设置凭据或 CI 密钥、浏览不熟悉的第三方仪表板，或运行一次性迁移/切换 | [→ 详细报告](engineering/wizard/report.md) |
 
 ---
 
@@ -60,7 +57,6 @@ Skills 按调用方式分为两种：
 |---|-------|---------|---------|
 | 19 | **grill-me** | 对一个计划或设计进行无情的深度访谈，直到设计树的每个分支都被解决 | [→ 详细报告](productivity/grill-me/report.md) |
 | 20 | **handoff** | 将当前对话压缩为交接文档，使另一个 Agent 可以继续工作 | [→ 详细报告](productivity/handoff/report.md) |
-| 21 | **teach** | 通过多个会话向用户教授新技能或概念，使用当前目录作为有状态的教学工作空间 | [→ 详细报告](productivity/teach/report.md) |
 | 23 | **wait-what** | 当一条消息没理解时立即触发。Agent 使用你缺失的上下文、用通俗英语和你的 CONTEXT.md 词汇重新表述 | [→ 详细报告](productivity/wait-what/report.md) |
 
 ---
