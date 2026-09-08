@@ -32,11 +32,9 @@ Skills 按调用方式分为两种：
 | # | Skill | 简要描述 | 详细报告 |
 |---|-------|---------|---------|
 | 1 | **ask-matt（trash）** | 询问哪个 Skill 或流程适合你的情况，是本仓库用户调用 Skills 的路由器 | [→ 详细报告](engineering/ask-matt/report.md) |
-| 2 | **grill-with-docs** | 通过深度访谈帮助你与 Agent 对齐，同时构建项目的领域模型、优化术语、更新 CONTEXT.md 和 ADR | [→ 详细报告](engineering/grill-with-docs/report.md) |
 | 3 | **triage** | 通过状态机将 Issue 在分诊角色之间流转 | [→ 详细报告](engineering/triage/report.md) |
 | 4 | **improve-codebase-architecture** | 扫描代码库寻找深化（deepening）机会，以可视化 HTML 报告呈现，然后对你选择的候选进行深入访谈 | [→ 详细报告](engineering/improve-codebase-architecture/report.md) |
 | 5 | **setup-matt-pocock-skills（trash）** | 为工程 Skills 配置仓库（Issue 追踪器、分诊标签、领域文档布局），每个仓库只需运行一次 | [→ 详细报告](engineering/setup-matt-pocock-skills/report.md) |
-| 6 | **to-spec** | 将当前对话转化为 Spec 并发布到 Issue 追踪器，无需访谈，直接综合已讨论的内容 | [→ 详细报告](engineering/to-spec/report.md) |
 | 7 | **to-tickets** | 将任何计划、Spec 或对话分解为一组追踪子弹（tracer-bullet）工单，每个工单声明其阻塞边 | [→ 详细报告](engineering/to-tickets/report.md) |
 | 8 | **implement** | 按照 Spec 或工单集合实现工作，在预先约定的边界上驱动 `/tdd`，提交前以 `/code-review` 收尾 | [→ 详细报告](engineering/implement/report.md) |
 | 9 | **wayfinder** | 规划超出单个 Agent 会话容量的超大块工作，作为 Issue 追踪器上的共享决策工单地图，逐个解决直到路径清晰 | [→ 详细报告](engineering/wayfinder/report.md) |
@@ -45,14 +43,9 @@ Skills 按调用方式分为两种：
 
 | # | Skill | 简要描述 | 详细报告 |
 |---|-------|---------|---------|
-| 10 | **prototype** | 构建一次性原型来回答设计问题：用于状态/逻辑问题的单个可分享 HTML 文件，或可从同一路由切换的多个截然不同的 UI 变体 | [→ 详细报告](engineering/prototype/report.md) |
-| 11 | **diagnosing-bugs** | 针对困难 Bug 和性能回归的纪律性诊断循环：构建反馈循环 → 最小化 → 假设 → 插桩 → 修复 → 回归测试 | [→ 详细报告](engineering/diagnosing-bugs/report.md) |
-| 12 | **research** | 针对高可信度一手来源研究问题，将发现结果以带引用的 Markdown 文件捕获到仓库中，作为后台 Agent 运行 | [→ 详细报告](engineering/research/report.md) |
 | 13 | **tdd** | 红-绿-重构循环的测试驱动开发，一次一个垂直切片地构建功能或修复 Bug | [→ 详细报告](engineering/tdd/report.md) |
-| 14 | **domain-modeling** | 主动构建和优化项目的领域模型：用术语表挑战术语，用边缘场景压力测试，内联更新 CONTEXT.md 和 ADR | [→ 详细报告](engineering/domain-modeling/report.md) |
 | 15 | **codebase-design** | 设计深层模块的共享纪律和词汇：小接口背后包含大量行为，放置在干净的接缝处，可通过该接口测试 | [→ 详细报告](engineering/codebase-design/report.md) |
 | 16 | **code-review** | 自固定点以来对 diff 的双轴审查：**标准轴**（是否遵循仓库编码标准 + Fowler 坏味道基线？）和 **Spec 轴**（是否忠实实现了原始 Issue/Spec？），作为并行子 Agent 运行 | [→ 详细报告](engineering/code-review/report.md) |
-| 17 | **resolving-merge-conflicts** | 逐个 hunk 处理进行中的 git merge 或 rebase 冲突，通过追溯到每方的原始来源来按意图解决，然后完成操作（绝不 `--abort`） | [→ 详细报告](engineering/resolving-merge-conflicts/report.md) |
 | 18 | **wizard** | 生成交互式 bash 向导，引导人类完成只有他们能执行的步骤：配置基础设施、设置凭据或 CI 密钥、浏览不熟悉的第三方仪表板，或运行一次性迁移/切换 | [→ 详细报告](engineering/wizard/report.md) |
 
 ---
@@ -68,15 +61,7 @@ Skills 按调用方式分为两种：
 | 19 | **grill-me** | 对一个计划或设计进行无情的深度访谈，直到设计树的每个分支都被解决 | [→ 详细报告](productivity/grill-me/report.md) |
 | 20 | **handoff** | 将当前对话压缩为交接文档，使另一个 Agent 可以继续工作 | [→ 详细报告](productivity/handoff/report.md) |
 | 21 | **teach** | 通过多个会话向用户教授新技能或概念，使用当前目录作为有状态的教学工作空间 | [→ 详细报告](productivity/teach/report.md) |
-| 22 | **to-questionnaire** | 将你无法独自回答的决策转化为 Markdown 问卷，发给唯一能回答的人（异步填写或一起开会），它追问的是发送细节（给谁、需要什么），而非主题本身 | [→ 详细报告](productivity/to-questionnaire/report.md) |
 | 23 | **wait-what** | 当一条消息没理解时立即触发。Agent 使用你缺失的上下文、用通俗英语和你的 CONTEXT.md 词汇重新表述 | [→ 详细报告](productivity/wait-what/report.md) |
-
-### 模型调用（Model-invoked）
-
-| # | Skill | 简要描述 | 详细报告 |
-|---|-------|---------|---------|
-| 24 | **grilling** | 对计划、决策或想法进行无情的深度访谈，直到设计树的每个分支都被解决。是 `grill-me`、`grill-with-docs`、`triage`、`wayfinder` 和 `improve-codebase-architecture` 背后的可复用访谈原语 | [→ 详细报告](productivity/grilling/report.md) |
-| 25 | **writing-for-agents** | 为 Agent 编写文档：Skills、AGENTS.md/CLAUDE.md，以及 Agent 通过指针引用的任何文档 | [→ 详细报告](productivity/writing-for-agents/report.md) |
 
 ---
 
