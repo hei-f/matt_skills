@@ -1,0 +1,1 @@
+该文件夹为对skill的分析报告，每个skill文件夹下的rawSkill文件夹里放的是对应skill的skill源文件，report.md只是作为总结分析使用，任何对skill的消费行为应该直接消费skill源文件，而不是report.md。
