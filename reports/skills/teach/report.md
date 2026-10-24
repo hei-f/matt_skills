@@ -55,13 +55,13 @@
 
 ### 常见问题
 
-- **文件放在了哪里？我的跑到了 `~/.claude/skills` 下。** 一个真实的、尚未修复的 bug（#377）。SKILL.md 对两个不同的根使用了 `./`：`./MISSION-FORMAT.md` 确实位于已安装 Skill 中 SKILL.md 旁边，而 `./lessons/`、`./reference/` 等本应在你的目录中。将第一种路径解析为 Skill 安装目录的 Agent 会继续将第二种也解析到那里。在第一堂课前检查它落在了哪里，明确指定目录名开始。
+- **文件放在了哪里？我的跑到了 `~/.claude/skills` 下。** 一个真实的 bug（#377）。SKILL.md 现在明确：工作区路径（`./lessons/` 等）从运行 `/teach` 的目录解析，只有 `*-FORMAT.md` 链接从 Skill 文件夹解析。
 
 - **留在同一个会话还是每堂课新开会话？** 三种方式都可行：留在同一会话、在新会话中重新调用 `/teach`、或在工作空间文件夹中打开新会话。每堂课是其自身的调用。文件夹是连续性，不是对话。常见做法是在工作空间中打开新会话并说 `/teach next lesson for <topic>`。
 
 - **怎么知道它教的不是编造的？** 仅凭 Skill 的话你不知道。你阅读一手来源。`teach` 不足以可靠到不加检查就信任，任何基于 LLM 的 Skill 都不行。接地机制（RESOURCES.md、每课引用、每课推荐一手来源）的存在是为了让验证变得廉价，而非消除验证需求。失败不是假设性的：一个学 2x2 魔方的用户得到了无法解出魔方的捏造动作序列。
 
-- **正确测验答案总是第一个选项。** 多人确认（Sonnet、Opus、GLM），仍未修复。SKILL.md 现在要求每个答案字数相同，但这解决了不同的暗示（正确答案曾是唯一有完整推理的那个），对位置却未提及。一个贡献者测试了位置层面的指令修复，报告正确答案在 9 课 33 次测验中仍 33 次落在 A 位置，指向 `assets/` 中的洗牌测验组件才是真正的修复。
+- **正确测验答案总是第一个选项。** 多人确认（Sonnet、Opus、GLM），仍未修复。SKILL.md 现在要求每个答案字数相同（这解决了不同的暗示：正确答案曾是唯一有完整推理的那个），并要求在各题之间变换正确选项的位置，不得通过格式或顺序给出暗示。一个贡献者测试了位置层面的指令修复，报告正确答案在 9 课 33 次测验中仍 33 次落在 A 位置，指向 `assets/` 中的洗牌测验组件才是真正的修复。
 
 - **它假设我已经知道了一些东西，并使用了从未定义的术语。** 最常见的实质性投诉。没有评估步骤：`teach` 从使命和学习记录推断你的水平，而在第零次会话中没有学习记录。两条帮助：在第一条消息中陈述你的先验知识和盲区，并在课程偏离时大声纠正水平——因为纠正会成为学习记录并引导下一课。显式知识评估步骤是一个长期的功能请求（#725）。
 
@@ -97,10 +97,10 @@
 > `teach` 将你运行它的目录转化为一个常设教学工作空间，通过多个会话，以短小独立的自包含 HTML 课程来教授一个主题。
 
 <!--原文-->
-> It does not teach from what the model already knows. Parametric knowledge is treated as untrusted: before it teaches, it goes and finds high-trust resources, records them in `RESOURCES.md`, and cites them inside every lesson. The other structural fact is that it is stateful: the mission, the resources, the lessons and the record of what you have learned all live in the directory as files, so the next session picks up from those files rather than from whatever is left of the last conversation.
+> It does not teach from what the model already knows. It treats parametric knowledge as untrusted. Before it teaches, it finds high-trust resources, records them in `RESOURCES.md`, and cites them inside every lesson. It is also stateful. The mission, the resources, the lessons and the record of what you have learned all live as files in the directory, so the next session continues from those files, not from what is left of the last conversation.
 
 <!--翻译-->
-> 它不从模型已知的内容中教学。参数知识被视为不可信：在教学之前，它会去寻找高可信度资源，记录在 `RESOURCES.md` 中，并在每堂课中引用它们。另一个结构事实是它是**有状态的**：使命、资源、课程以及你已学内容的记录都以文件形式存在于目录中，因此下一个会话从这些文件中恢复，而非从上一次对话剩下的内容恢复。
+> 它不从模型已知的内容中教学。它将参数知识视为不可信。在教学之前，它会去寻找高可信度资源，记录在 `RESOURCES.md` 中，并在每堂课中引用它们。它也是**有状态的**。使命、资源、课程以及你已学内容的记录都以文件形式存在于目录中，因此下一个会话从这些文件继续，而非从上一次对话剩下的内容继续。
 
 <!--原文-->
 > Reach for it when the learning is the project: a language, a framework, a codebase you have just joined, yoga, shaders, a certification. It is not the tool for one explanation in passing.
@@ -109,61 +109,85 @@
 > 当学习本身就是项目时使用它：一门语言、框架、刚加入的代码库、瑜伽、着色器、认证考试。它不是用来做一次性解释的工具。
 
 <!--原文-->
-> What accumulates in that directory: `MISSION.md` -- Why you are learning this. Everything else hangs off it; if it is missing, the first thing `teach` does is interview you until it isn't. `RESOURCES.md` -- The vetted sources it teaches from, split into Knowledge and Wisdom (communities). `lessons/*.html` -- The numbered lessons: the primary unit of teaching. `reference/*.html` -- Compressed cheat-sheets, algorithms, glossaries: the documents you actually return to. `learning-records/*.md` -- ADR-style notes on what you have demonstrably learned, used to decide what to teach next. `assets/*` -- Reusable components, starting with a shared stylesheet, so the lessons look like one course. `NOTES.md` -- Your stated teaching preferences.
+> What accumulates in that directory:
+> | Path | What it holds |
+> | --- | --- |
+> | `MISSION.md` | Why you are learning this. Every other file depends on it. If it is missing, the first thing `teach` does is interview you until it isn't |
+> | `RESOURCES.md` | The vetted sources it teaches from, split into Knowledge and Wisdom (communities) |
+> | `lessons/*.html` | The numbered lessons: the primary unit of teaching |
+> | `reference/*.html` | Compressed cheat-sheets, algorithms, glossaries: the documents you return to |
+> | `learning-records/*.md` | ADR-style notes on what you have demonstrably learned, used to decide what to teach next |
+> | `assets/*` | Reusable components, starting with a shared stylesheet, so the lessons look like one course |
+> | `NOTES.md` | Your stated teaching preferences |
 
 <!--翻译-->
-> 该目录中累积的内容：`MISSION.md`——你为什么要学这个。一切都挂在这上面；如果缺少它，`teach` 要做的第一件事就是访谈到它不再缺失。`RESOURCES.md`——经过审查的教学来源，分为知识（Knowledge）和智慧/社区（Wisdom）。`lessons/*.html`——编号课程：教学的主要单元。`reference/*.html`——压缩的备忘单、算法、术语表：你实际会回来查阅的文档。`learning-records/*.md`——关于你已可证明学会的内容的 ADR 风格笔记，用于决定下一步教什么。`assets/*`——可复用组件，从共享样式表开始，使课程看起来像一个课程体系。`NOTES.md`——你声明的教学偏好。
+> 该目录中累积的内容：
+> | 路径 | 内容 |
+> | --- | --- |
+> | `MISSION.md` | 你为什么要学这个。其他所有文件都依赖于它。如果缺少它，`teach` 要做的第一件事就是访谈到它不再缺失 |
+> | `RESOURCES.md` | 经过审查的教学来源，分为知识（Knowledge）和智慧/社区（Wisdom） |
+> | `lessons/*.html` | 编号课程：教学的主要单元 |
+> | `reference/*.html` | 压缩的备忘单、算法、术语表：你会回来查阅的文档 |
+> | `learning-records/*.md` | 关于你已可证明学会的内容的 ADR 风格笔记，用于决定下一步教什么 |
+> | `assets/*` | 可复用组件，从共享样式表开始，使课程看起来像一个课程体系 |
+> | `NOTES.md` | 你声明的教学偏好 |
 
 <!--原文-->
-> The word to think with is **storage strength**: long-term retention, as opposed to **fluency**, the in-the-moment recall that feels like mastery while you are reading and is gone a week later. `teach` builds the former through desirable difficulty: retrieval practice, spacing, interleaving. Knowledge comes first, where difficulty is the enemy because it eats the working memory you need in order to understand; then the skill is drilled through a tight feedback loop, where difficulty is the tool.
+> The word to think with is **storage strength**: long-term retention, as opposed to **fluency**, the in-the-moment recall that feels like mastery while you are reading and is gone a week later. `teach` builds the former through desirable difficulty: retrieval practice, spacing, interleaving. Knowledge comes first. At that stage difficulty works against you, because it uses up the working memory you need to understand. Then `teach` drills the skill through a tight feedback loop, and at that stage difficulty is the tool.
 
 <!--翻译-->
-> 关键思维用词是**存储强度**：长期记忆的保持，相对于**流畅性**——阅读时感觉像精通但一周后就消失的即时回忆。`teach` 通过合意困难构建前者：检索练习、间隔学习、交错学习。知识先行（此时困难是敌人，因为它消耗你理解所需的工作记忆），然后通过紧密的反馈循环训练技能（此时困难是工具）。
+> 关键思维用词是**存储强度**：长期记忆的保持，相对于**流畅性**——阅读时感觉像精通但一周后就消失的即时回忆。`teach` 通过合意困难构建前者：检索练习、间隔学习、交错学习。知识先行。在那一阶段，困难对你不利，因为它消耗你理解所需的工作记忆。然后 `teach` 通过紧密的反馈循环训练技能，此时困难是工具。
 
 <!--原文-->
-> Two things steer what you get taught. The **mission** (the concrete real-world reason you want this) grounds every lesson; without it the lessons drift abstract and nothing decides what comes next. From the mission and the learning records, `teach` picks the next lesson inside your **zone of proximal development**: challenging enough to take effort, not so far ahead that it stops being learnable.
+> Two things decide what you get taught. The **mission** (the concrete real-world reason you want this) is the basis of every lesson. Without it the lessons become abstract and nothing decides what comes next. From the mission and the learning records, `teach` picks the next lesson inside your **zone of proximal development**: hard enough to take effort, but not so far ahead that you cannot learn it.
 
 <!--翻译-->
-> 两个因素引导你被教什么。**使命**（你想要的具体的真实世界原因）使每堂课有根基；没有它，课程会变得抽象，且没有什么能决定接下来教什么。从使命和学习记录中，`teach` 选择**最近发展区**内的下一课：足够有挑战性需要努力，但又不至于远到无法学会。
+> 两个因素决定你被教什么。**使命**（你想要的具体的真实世界原因）是每堂课的基础。没有它，课程会变得抽象，且没有什么能决定接下来教什么。从使命和学习记录中，`teach` 选择**最近发展区**内的下一课：足够难，需要付出努力，但又不至于远到无法学会。
 
 <!--原文-->
-> A **lesson** is one self-contained HTML file, short enough to finish in a sitting, tied to the mission, giving one tangible win. It cites its sources, recommends one primary source to go and read yourself, and links to sibling lessons and reference documents. The split worth knowing: lessons are rarely revisited, reference documents are. So the compressed essence of a lesson (the syntax table, the algorithm, the pose sequence, the glossary) belongs in `reference/`, not buried in the lesson that introduced it.
+> A **lesson** is one self-contained HTML file, short enough to finish in a sitting, tied to the mission, giving one tangible win. It cites its sources, recommends one primary source to go and read yourself, and links to sibling lessons and reference documents.
+>
+> You rarely go back to a lesson, but you do go back to reference documents. So the short form of a lesson (the syntax table, the algorithm, the pose sequence, the glossary) belongs in `reference/`, not buried in the lesson that introduced it.
 
 <!--翻译-->
-> **课程**是一个自包含的 HTML 文件，短到可以一次学完，与使命绑定，提供一个切实的收获。它引用其来源，推荐一个一手来源让你自己去阅读，并链接到兄弟课程和参考文献。值得知道的区分：课程很少被重温，参考文献则经常。因此课程的压缩精华（语法表、算法、姿势序列、术语表）属于 `reference/`，而非埋没在介绍它们的课程中。
+> **课程**是一个自包含的 HTML 文件，短到可以一次学完，与使命绑定，提供一个切实的收获。它引用其来源，推荐一个一手来源让你自己去阅读，并链接到兄弟课程和参考文献。
+>
+> 你很少回头再看一堂课，但你确实会回头查阅参考文献。因此课程的精简形式（语法表、算法、姿势序列、术语表）属于 `reference/`，而非埋没在介绍它们的课程中。
 
 <!--原文-->
-> Lessons are built from **components** in `assets/`: stylesheets, quiz widgets, simulators, diagram helpers. Reuse is the default. The agent reads `assets/` before authoring a lesson and builds from what is there, and anything new that a second lesson could use is written as a component rather than inlined. The shared stylesheet is the first component every workspace earns; it is what stops the output being a pile of one-offs.
+> Lessons are built from **components** in `assets/`: stylesheets, quiz widgets, simulators, diagram helpers. Reuse is the default. The agent reads `assets/` before authoring a lesson and builds from what is there. It writes anything new that a second lesson could use as a component, not inline. The shared stylesheet is the first component in every workspace, and it makes the lessons look like one course instead of many unrelated pages.
 
 <!--翻译-->
-> 课程由 `assets/` 中的**组件**构建：样式表、测验小部件、模拟器、图表辅助工具。复用是默认行为。Agent 在编写课程前先读取 `assets/`，从已存在的内容中构建；任何第二堂课也能使用的新内容都写为组件而非内联。共享样式表是每个工作空间获得的第一个组件；它确保输出不是一堆一次性作品。
+> 课程由 `assets/` 中的**组件**构建：样式表、测验小部件、模拟器、图表辅助工具。复用是默认行为。Agent 在编写课程前先读取 `assets/`，从已存在的内容中构建。任何第二堂课也能使用的新内容，它都会写为组件而非内联。共享样式表是每个工作空间中的第一个组件，它让课程看起来像一门课程，而不是许多互不相关的页面。
 
 <!--原文-->
-> You don't, on the skill's word alone. You read the primary sources. `teach` is not reliable enough to trust unchecked, and no skill built on an LLM is. The grounding machinery (`RESOURCES.md`, citations in every lesson, one recommended primary source per lesson) exists to make verification cheap, not to remove the need for it.
+> You don't, on the skill's word alone. You read the primary sources. `teach` is not reliable enough to trust unchecked, and no skill built on an LLM is. The grounding (`RESOURCES.md`, citations in every lesson, one recommended primary source per lesson) makes it cheap to check a lesson. It does not remove the need to check.
 
 <!--翻译-->
-> 仅凭 Skill 的话你无法知道。你阅读一手来源。`teach` 不足以可靠到不加检查就信任，任何基于 LLM 的 Skill 都不行。接地机制（`RESOURCES.md`、每课引用、每课推荐一手来源）的存在是为了让验证变得廉价，而非消除验证需求。
+> 仅凭 Skill 的话你无法知道。你阅读一手来源。`teach` 不足以可靠到不加检查就信任，任何基于 LLM 的 Skill 都不行。接地机制（`RESOURCES.md`、每课引用、每课推荐一手来源）让检查一堂课变得廉价。它并不能消除检查的必要。
 
 <!--原文-->
-> The correct quiz answer is always the first option. Confirmed by several people, on Sonnet, on Opus and on GLM, and still unfixed. One contributor tested an instruction-level fix for position and reported the correct answer still landing in slot A 33 times out of 33 across nine lessons, which points at a shuffling quiz component in `assets/` as the real fix rather than better wording.
+> The correct quiz answer is always the first option. Several people have confirmed this on Sonnet, Opus and GLM, and it is still unfixed. One contributor tested an instruction-level fix for position, and the correct answer still landed in slot A 33 times out of 33 across nine lessons. So the real fix is a quiz component in `assets/` that shuffles the answers, not better wording.
 
 <!--翻译-->
-> 正确测验答案总是第一个选项。多人确认（Sonnet、Opus、GLM），仍未修复。一个贡献者测试了位置层面的指令修复，报告正确答案在 9 课 33 次测验中仍 33 次落在 A 位置，指向 `assets/` 中的洗牌测验组件才是真正的修复，而非更好的措辞。
+> 正确测验答案总是第一个选项。多人确认（Sonnet、Opus、GLM），仍未修复。一个贡献者测试了位置层面的指令修复，而正确答案在 9 课 33 次测验中仍 33 次落在 A 位置。因此真正的修复是 `assets/` 中的一个洗牌测验组件，而非更好的措辞。
+>
+> 注：上游 docs 页此处尚未更新——当前 SKILL.md 已要求在各题之间变换正确选项的位置（详见第一部分"常见问题"）。
 
 <!--原文-->
-> It assumed I already knew things, and used terms it never defined. The commonest substantive complaint. There is no assessment step: `teach` infers your level from the mission and the learning records, and in session one there are no learning records. Two things help: state your prior knowledge and your gaps in the first message, and correct the level out loud when a lesson misses, because the correction becomes a learning record and steers the next one.
+> It assumed I already knew things, and used terms it never defined. This is the most common real complaint. There is no assessment step. `teach` infers your level from the mission and the learning records, and in session one there are no learning records. Two things help: state your prior knowledge and your gaps in the first message, and correct the level out loud when a lesson misses, because the correction becomes a learning record and steers the next one.
 
 <!--翻译-->
-> 它假设我已经知道了一些东西，并使用了从未定义的术语。最常见的实质性投诉。没有评估步骤：`teach` 从使命和学习记录推断你的水平，而在第一次会话中没有学习记录。两条帮助：在第一条消息中陈述你的先验知识和盲区，并在课程偏离时大声纠正水平——因为纠正会成为学习记录并引导下一课。
+> 它假设我已经知道了一些东西，并使用了从未定义的术语。这是最常见的真实投诉。没有评估步骤。`teach` 从使命和学习记录推断你的水平，而在第一次会话中没有学习记录。两条帮助：在第一条消息中陈述你的先验知识和盲区，并在课程偏离时大声纠正水平——因为纠正会成为学习记录并引导下一课。
 
 <!--原文-->
-> Is it only useful for code? No, and the non-coding use is the larger part of the record: Korean, Japanese formal register, piano, guitar, board game design, OpenSCAD, film plots, Azure and CCNA certifications, university exams, and children of eight and ten getting printable books on escape rooms and fire salamanders. Nothing in the skill is programming-specific: mission, resources, zone of proximal development and drill work the same way in any domain.
+> Is it only useful for code? No. Most reported use is outside coding: Korean, Japanese formal register, piano, guitar, board game design, OpenSCAD, film plots, Azure and CCNA certifications, university exams, and children of eight and ten getting printable books on escape rooms and fire salamanders. Nothing in the skill is specific to programming. Mission, resources, zone of proximal development and drill work the same way in any domain.
 
 <!--翻译-->
-> 只对编程有用吗？不，非编程用途是记录的更大部分：韩语、日语敬语、钢琴、吉他、桌游设计、OpenSCAD、电影情节、Azure 和 CCNA 认证、大学考试，以及给 8 岁和 10 岁孩子做的密室逃脱和火蝾螈可打印书籍。Skill 中没有任何内容是编程特定的：使命、资源、最近发展区和训练在任何领域都以相同方式运作。
+> 只对编程有用吗？不。大多数报告的用途都在编程之外：韩语、日语敬语、钢琴、吉他、桌游设计、OpenSCAD、电影情节、Azure 和 CCNA 认证、大学考试，以及给 8 岁和 10 岁孩子做的密室逃脱和火蝾螈可打印书籍。Skill 中没有任何内容是编程特定的。使命、资源、最近发展区和训练在任何领域都以相同方式运作。
 
 <!--原文-->
-> `teach` is a **reach-for-it-anytime standalone**. It is not a step in a build chain and shares no artifacts with the engineering flow; it owns its directory and lives there for as long as the topic lasts. Its one real neighbour is handoff, through the composition Matt named as the answer to "what do I do if I'm being grilled about something I don't understand?": don't stop the grilling to learn: `/handoff` to a teaching workspace, learn it there with `/teach`, then go back and pick up where you left off.
+> `teach` is a **reach-for-it-anytime standalone**. It is not a step in a build chain and shares no artifacts with the engineering flow; it works in its own directory for as long as you study the topic. Its one real neighbour is handoff. Together they answer "what do I do if I'm being grilled about something I don't understand?" Don't stop the grilling to learn. `/handoff` to a teaching workspace, learn the topic there with `/teach`, then go back and continue where you left off.
 
 <!--翻译-->
-> `teach` 是一个**随时可用的独立 Skill**。它不在构建链中，不与工程流程共享产物；它拥有自己的目录并在主题持续期间一直存在。它唯一的真正邻居是 handoff，通过 Matt 对"如果我在 grilling 中被问到不懂的东西该怎么办？"的回答所命名的组合用法：不要停止 grilling 去学习——用 `/handoff` 交接给教学工作空间，在那里用 `/teach` 学习，然后回来从断点继续。
+> `teach` 是一个**随时可用的独立 Skill**。它不在构建链中，不与工程流程共享产物；它在自己的目录中工作，只要你还在研究这个主题，它就一直待在那里。它唯一的真正邻居是 handoff。两者共同回答"如果我在 grilling 中被问到不懂的东西该怎么办？"：不要停止 grilling 去学习。用 `/handoff` 交接给教学工作空间，在那里用 `/teach` 学习这个主题，然后回去从你停下的地方继续。

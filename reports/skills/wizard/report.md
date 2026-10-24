@@ -31,9 +31,9 @@ wizard 的核心是一个固定的**模板库** `template.sh`。该文件分为�
 
 - **分阶段进度**：`stage "name"` 清屏，宣告当前阶段及 "Stage X/Y" 进度；`TOTAL_STAGES` 变量驱动显示
 - **确认关卡**：`pause` 等待人类完成浏览器操作后按回车；`confirm "question"` 提供 y/N 门禁，用于不可逆操作前
-- **跨平台 URL 打开**：`open_url URL` 自动检测 macOS（`open`）、Linux（`xdg-open`）、Windows（`explorer.exe`）、WSL（`wslview`），均静默降级为警告而非崩溃
+- **跨平台 URL 打开**：`open_url URL` 自动检测 macOS（`open`）、Linux（`xdg-open`）、Windows（`explorer.exe`）、WSL（`wslview`）；打开失败或无可用打开器时打印警告并继续运行，而非崩溃
 - **隐藏密钥输入**：`ask_secret KEY "prompt"` 使用 `read -rs`，敏感内容永不会回显到终端滚动历史中
-- **幂等 `.env` 写入**：`write_env KEY VALUE` 执行 upsert——不存在则创建 `.env`；已存在的同名键会被替换（保留无关节）；`_existing KEY` 读取现有值，供重跑时作为默认值
+- **幂等 `.env` 写入**：`write_env KEY VALUE` 执行 upsert——不存在则以 0600 权限创建 `.env`；值以单引号包裹写入（`KEY='VALUE'`，内嵌单引号转义），空格、`#`、`$` 等字符可原样保留；已存在的同名键会被替换（保留无关节）；对已存在的 `.env` 穿过符号链接写入并保留其权限模式；`_existing KEY` 读取现有值（还原单引号包裹），供重跑时作为默认值
 - **GitHub secrets/variables 写入**：`set_secret NAME VALUE` 封装 `gh secret set`；`set_var NAME VALUE` 封装 `gh variable set`。若 `gh` 不可用或未认证，则优雅降级为警告，并在 `SKIPPED` 数组中记录待手动完成的事项
 - **结尾摘要**：`finish` 清屏后列出已写入的值、已设置的密钥，并单独列出因环境限制跳过的操作
 
@@ -100,7 +100,7 @@ Agent 的工作仅限**界定流程并编写 STAGES 标记之下的阶段内容*
 | `open_url URL` | 在用户的浏览器中打开 URL |
 | `ask KEY "prompt"` | 读取公开值到变量 `$KEY`；重跑时以已有 `.env` 值作为默认 |
 | `ask_secret KEY "prompt"` | 读取密钥值（输入隐藏）；重跑时以已有 `.env` 值作为默认 |
-| `write_env KEY VALUE` | 幂等 upsert KEY=VALUE 到 `.env` 文件 |
+| `write_env KEY VALUE` | 幂等 upsert KEY='VALUE' 到 `.env` 文件 |
 | `set_secret NAME VALUE` | 通过 `gh` 写入 GitHub Actions secret |
 | `set_var NAME VALUE` | 通过 `gh` 写入 GitHub Actions variable |
 | `pause "msg"` | 等待人类按回车确认已完成手动部分 |
@@ -153,7 +153,7 @@ wizard 通过 `.env` 文件实现幂等重跑：
 ### 已知限制
 
 1. **无回退按钮**：阶段只向前运行，错误回答在 stage 3 意味着 Ctrl-C 整个重跑。设计上是刻意选择——重跑廉价，默认值机制使重新走到出错阶段的代价很低（一路回车即可）
-2. **箭头键不工作**（已知 Bug [#741](https://github.com/mattpocock/skills/issues/741)）：`ask`/`ask_secret` 使用 `read -r` 而非 Readline，方向键插入转义序列（`^[[D` / `^[[C`）而非移动光标。退格键正常。解决方法：退格删除到错误位置，而非移动光标进入错误位置
+2. **`ask_secret` 箭头键不工作**：`ask` 使用 Readline（`read -e -r`），方向键可正常移动光标；但 `ask_secret` 的隐藏输入使用 `read -rs`（未启用 Readline），方向键插入转义序列（`^[[D` / `^[[C`）而非移动光标。退格键正常。解决方法：退格删除到错误位置，而非移动光标进入错误位置
 3. **不检查第三方服务状态**：范围界定只读取本地 `.env` 文件判断值是否存在。如果密钥已存在于 `.env`，wizard 将其作为默认值提供；但如果第三方账户已创建但密钥从未保存到本地，wizard 仍会引导前往仪表板——它无法得知服务端的账户状态
 4. **单阶段单屏幕**：由于每个 `stage` 都会清屏，超出终端高度的步骤会丢失滚动部分。需要将大型任务拆分为更小的阶段
 
@@ -270,10 +270,10 @@ wizard 通过 `.env` 文件实现幂等重跑：
 > `wizard` 生成一个交互式 Bash 脚本，逐步引导人类完成手动流程：接入第三方服务、运行一次性迁移、将项目从状态 A 转移到状态 B。它打开每个 URL、指出点击和复制的位置、捕获返回值，并将其写入 `.env` 文件和 GitHub Actions secrets。
 
 <!--原文-->
-> The [agent](https://www.aihero.dev/ai-coding-dictionary/agent) writes the script; it never runs it. You do, on your own machine. So a wizard is not a list of instructions you follow; it is a program that drives the procedure and holds the state, and your part is to click, paste, and press Enter.
+> The [agent](https://www.aihero.dev/ai-coding-dictionary/agent) writes the script; it never runs it. You do, on your own machine. A wizard is a program, not a list of instructions. The script runs each step in order and keeps the values you enter. Your part is to click, paste, and press Enter.
 
 <!--翻译-->
-> [Agent](https://www.aihero.dev/ai-coding-dictionary/agent) 编写脚本；它从不运行。你在自己的机器上运行。所以向导不是一份你遵循的指令列表；它是一个驱动流程并持有状态的程序，你的角色是点击、粘贴并按回车。
+> [Agent](https://www.aihero.dev/ai-coding-dictionary/agent) 编写脚本；它从不运行。你在自己的机器上运行。向导是一个程序，而不是一份指令列表。脚本按顺序运行每一步，并保留你输入的值。你的角色是点击、粘贴并按回车。
 
 <!--原文-->
 > A **stage** is one focused task on one screen. The script clears the terminal between stages, so a stage that overflows the screen loses the part that scrolled away. You author stages in dependency order and set `TOTAL_STAGES`, which drives the progress display.
@@ -282,13 +282,13 @@ wizard 通过 `.env` 文件实现幂等重跑：
 > 一个**阶段**是一个屏幕上的一个聚焦任务。脚本在阶段之间清屏，所以溢出屏幕的阶段会丢失滚出的部分。你按依赖顺序编写阶段，并设置驱动进度显示的 `TOTAL_STAGES`。
 
 <!--原文-->
-> Scoping happens before a line is written. The skill reads the repo instead of asking cold: `.env*`, `docker-compose*`, framework config, and every `secrets.*` / `vars.*` reference in `.github/workflows/`: each of those is a value the wizard has to produce. It then shows you the ordered stage list to confirm, and only after that maps each stage to the exact path a human follows ("Dashboard → Developers → API keys → Reveal test key → copy"). Where it doesn't know the current UI, it asks you or checks the docs rather than inventing clicks.
+> The skill scopes the procedure before it writes any script. It reads the repo instead of asking cold: `.env*`, `docker-compose*`, framework config, and every `secrets.*` / `vars.*` reference in `.github/workflows/`. Each of those references is a value the wizard has to produce. It then shows you the ordered stage list to confirm. Only after you confirm does it map each stage to the exact path a human follows ("Dashboard → Developers → API keys → Reveal test key → copy"). Where it doesn't know the current UI, it asks you or checks the docs rather than inventing clicks.
 
 <!--翻译-->
-> 范围界定在编写任何代码之前进行。该 Skill 先阅读仓库而非冷冰冰地提问：`.env*`、`docker-compose*`、框架配置以及 `.github/workflows/` 中的每个 `secrets.*` / `vars.*` 引用——每个都是向导必须产出的值。然后向你展示有序的阶段列表以供确认，只有在此之后才将每个阶段映射到人类遵循的精确路径（"Dashboard → Developers → API keys → Reveal test key → copy"）。如果不了解当前 UI，它会询问你或查阅文档，而非凭空编造点击路径。
+> 该 Skill 在编写任何脚本之前先界定流程。它先阅读仓库而非冷冰冰地提问：`.env*`、`docker-compose*`、框架配置以及 `.github/workflows/` 中的每个 `secrets.*` / `vars.*` 引用。每个引用都是向导必须产出的值。然后向你展示有序的阶段列表以供确认。只有在你确认之后，它才将每个阶段映射到人类遵循的精确路径（"Dashboard → Developers → API keys → Reveal test key → copy"）。如果不了解当前 UI，它会询问你或查阅文档，而非凭空编造点击路径。
 
 <!--原文-->
-> For each captured value, scoping settles where it lands:
+> For each captured value, scoping decides where it goes:
 > | Destination | When |
 > | --- | --- |
 > | `.env` only | Local dev needs it, CI doesn't |
@@ -298,7 +298,7 @@ wizard 通过 `.env` 文件实现幂等重跑：
 > | Nowhere | The stage is a pure action: a switch flipped, a plan upgraded |
 
 <!--翻译-->
-> 对于每个捕获的值，范围界定确定其落点：
+> 对于每个捕获的值，范围界定决定其落点：
 > | 落点 | 适用场景 |
 > | --- | --- |
 > | 仅 `.env` | 本地开发需要，CI 不需要 |
@@ -308,40 +308,40 @@ wizard 通过 `.env` 文件实现幂等重跑：
 > | 无处 | 该阶段是一个纯动作：切换开关、升级方案 |
 
 <!--原文-->
-> The template ships the whole experience: progress with time remaining, confirmation gates, cross-platform URL opening including WSL, hidden entry for secrets, idempotent `.env` upserts, `gh secret` / `gh variable` writes, and a closing summary of everything it had to skip. Everything above the `STAGES` marker is a fixed library, identical in every wizard and never hand-edited. The consistency is the point. Your job is only to scope the procedure and author its stages.
+> The template ships the whole experience: progress with time remaining, confirmation gates, cross-platform URL opening including WSL, hidden entry for secrets, idempotent `.env` upserts, `gh secret` / `gh variable` writes, and a closing summary of everything it had to skip. Everything above the `STAGES` marker is a fixed library, identical in every wizard and never hand-edited. Because the library never changes, every wizard behaves the same way. The only work per wizard is to scope the procedure and author its stages.
 
 <!--翻译-->
-> 模板提供了完整的体验：进度显示与剩余时间、确认门禁、跨平台 URL 打开（含 WSL）、密钥隐藏输入、幂等 `.env` upsert、`gh secret` / `gh variable` 写入，以及跳过的所有事项的结尾摘要。`STAGES` 标记之上的所有内容是一个固定库，在每个向导中完全相同且永不手动编辑。一致性就是它的意义所在。你的工作仅是界定流程和编写阶段内容。
+> 模板提供了完整的体验：进度显示与剩余时间、确认门禁、跨平台 URL 打开（含 WSL）、密钥隐藏输入、幂等 `.env` upsert、`gh secret` / `gh variable` 写入，以及跳过的所有事项的结尾摘要。`STAGES` 标记之上的所有内容是一个固定库，在每个向导中完全相同且永不手动编辑。由于这个库从不变化，每个向导的行为方式都相同。每个向导唯一要做的工作就是界定流程并编写它的阶段内容。
 
 <!--原文-->
-> The agent that writes a wizard never runs it end to end, because it opens browsers and waits for human input. It verifies statically instead: `bash -n`, `shellcheck` where available, and a trace that every value lands where scoping said it would, with every `set_secret` name matching a real `secrets.*` reference in CI. Set your expectations accordingly: the first run is yours, and that run is the test.
+> The agent that writes a wizard never runs it end to end, because the script opens browsers and waits for human input. The agent checks it statically instead: `bash -n`, `shellcheck` where available, and a trace that every value lands where scoping said it would, with every `set_secret` name matching a real `secrets.*` reference in CI. So the first run is yours, and that run is the test.
 
 <!--翻译-->
-> 编写向导的 Agent 从不端到端运行它，因为它会打开浏览器并等待人工输入。它改为静态验证：`bash -n`、`shellcheck`（可用时），以及追踪每个值落入范围界定所指定的目标，每个 `set_secret` 名称匹配 CI 中的真实 `secrets.*` 引用。相应地设置你的期望：首次运行是你的，而那次运行就是测试。
+> 编写向导的 Agent 从不端到端运行它，因为脚本会打开浏览器并等待人工输入。Agent 改为静态检查：`bash -n`、`shellcheck`（可用时），以及追踪每个值落入范围界定所指定的目标，每个 `set_secret` 名称匹配 CI 中的真实 `secrets.*` 引用。所以首次运行由你来完成，而那次运行就是测试。
 
 <!--原文-->
 > **Do my API keys end up in the model's context?**
-> No. The agent writes a script; it doesn't run it. You run the script yourself, and it captures the key with hidden terminal entry and writes it straight to `.env` or `gh secret`. The wizard is a CLI, and the model is not connected to it. One caveat: that holds for values the wizard captures at runtime. If you paste a key into the chat while scoping the procedure, it's in the context like any other pasted text.
+> No. The agent writes a script; it doesn't run it. You run the script yourself, and it captures the key with hidden terminal entry and writes it straight to `.env` or `gh secret`. The wizard is a CLI, and the model is not connected to it. This holds only for values the wizard captures at runtime. If you paste a key into the chat while scoping the procedure, it's in the context like any other pasted text.
 
 <!--翻译-->
 > **我的 API 密钥会进入模型的上下文吗？**
-> 不会。Agent 编写脚本，它不运行。你自己运行脚本，脚本通过隐藏的终端输入捕获密钥并直接写入 `.env` 或 `gh secret`。向导是一个 CLI，模型与之没有连接。一个注意事项：这适用于向导运行时捕获的值。如果你在界定流程时在聊天中粘贴了密钥，它会像任何其他粘贴文本一样进入上下文。
+> 不会。Agent 编写脚本，它不运行。你自己运行脚本，脚本通过隐藏的终端输入捕获密钥并直接写入 `.env` 或 `gh secret`。向导是一个 CLI，模型与之没有连接。这只适用于向导在运行时捕获的值。如果你在界定流程时在聊天中粘贴了密钥，它会像任何其他粘贴文本一样进入上下文。
 
 <!--原文-->
 > **Can I go back and fix a value I mistyped?**
-> Not mid-run. There is no back button: the stages run forward, and a wrong answer on stage 3 means Ctrl-C and re-run. Re-running is cheap by design: any value already written to `.env` is offered back as a default, so you press Enter through the stages you got right and retype only the wrong one.
+> Not mid-run. There is no back button. The stages run forward, and a wrong answer on stage 3 means Ctrl-C and re-run. Re-running is cheap, because any value already written to `.env` is offered back as a default, so you press Enter through the stages you got right and retype only the wrong one. Users asked for this in launch week, and it is still open: "loved it! One thing though, is there a way to go back and correct what you've entered?"
 
 <!--翻译-->
 > **我可以回退并修正输错的值吗？**
-> 运行中不行。没有回退按钮：阶段只向前运行，stage 3 的错误回答意味着 Ctrl-C 并重新运行。重跑廉价是刻意设计：任何已写入 `.env` 的值会作为默认值提供，因此你只需通过对的阶段按回车，仅重新输入错误的那一个。
+> 运行中不行。没有回退按钮。阶段只向前运行，stage 3 的错误回答意味着 Ctrl-C 并重新运行。重跑成本低，因为任何已写入 `.env` 的值会作为默认值提供，因此你只需通过对的阶段按回车，仅重新输入错误的那一个。用户在发布周提出了这一点，而它至今仍然开放："太棒了！不过还有一点，有没有办法回去修正已输入的内容？"
 
 <!--原文-->
 > **Does it know what I've already set up?**
-> Partly, and less than the launch reactions assumed. It reads the repo before it asks (your `.env` files, `docker-compose`, framework config, the `secrets.*` references in CI), so it scopes to values that are genuinely missing rather than starting from zero the way a README does. What it doesn't do is check the third-party service. If a key exists in your `.env` the wizard offers it back and Enter keeps it; if you already created the Stripe account but never saved the key, the wizard still sends you to the dashboard for it.
+> Partly, and less than the launch reactions assumed. It reads the repo before it asks (your `.env` files, `docker-compose`, framework config, the `secrets.*` references in CI), so it scopes to values that are missing rather than starting from zero the way a README does. What it doesn't do is check the third-party service. If a key exists in your `.env` the wizard offers it back and Enter keeps it; if you already created the Stripe account but never saved the key, the wizard still sends you to the dashboard for it.
 
 <!--翻译-->
 > **它知道我已完成哪些配置吗？**
-> 部分知道，且不如发布时的反应所假设的那么多。它在提问前阅读仓库（你的 `.env` 文件、`docker-compose`、框架配置、CI 中的 `secrets.*` 引用），因此它的范围界定针对真正缺失的值，而非像 README 那样从零开始。它不做的是检查第三方服务。如果密钥存在于你的 `.env` 中，向导会将其作为默认值提供，回车保留它；但如果你已创建 Stripe 账户却从未保存密钥，向导仍会将你引导到仪表板获取。
+> 部分知道，且不如发布时的反应所假设的那么多。它在提问前阅读仓库（你的 `.env` 文件、`docker-compose`、框架配置、CI 中的 `secrets.*` 引用），因此它的范围界定针对缺失的值，而非像 README 那样从零开始。它不做的是检查第三方服务。如果密钥存在于你的 `.env` 中，向导会将其作为默认值提供，回车保留它；但如果你已创建 Stripe 账户却从未保存密钥，向导仍会将你引导到仪表板获取。
 
 <!--原文-->
 > ## It's working if
@@ -363,8 +363,8 @@ wizard 通过 `.env` 文件实现幂等重跑：
 
 <!--原文-->
 > ## Where it fits
-> `wizard` is a reach-for-it-anytime standalone, sitting at the line where automation stops and a human has to click. Its nearest neighbour is [setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills), because both exist to get a repo into a working state: that one configures this skill set, while `wizard` generates a setup path for everything else. It also pairs with [implement](https://aihero.dev/skills-implement): when a build lands a feature that needs credentials or a manual cutover, a wizard is how the human half gets done. When you're unsure which skill fits the moment, [ask-matt](https://aihero.dev/skills-ask-matt) routes you.
+> `wizard` is a reach-for-it-anytime standalone, sitting at the line where automation stops and a human has to click. Its nearest neighbour is [setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills), because both exist to get a repo into a working state. That one configures this skill set, and `wizard` generates a setup path for everything else. It also pairs with [implement](https://aihero.dev/skills-implement): when a build lands a feature that needs credentials or a manual cutover, a wizard covers the steps only a human can do. When you're unsure which skill fits the moment, [ask-matt](https://aihero.dev/skills-ask-matt) routes you.
 
 <!--翻译-->
 > ## 定位
-> `wizard` 是一个随时可用的独立工具，位于自动化停止、人类必须点击的边界线上。其最近邻是 [setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills)，因为两者都旨在让仓库进入可用状态：那个配置此 Skill 集，而 `wizard` 为所有其他事物生成初始化路径。它也与 [implement](https://aihero.dev/skills-implement) 搭档：当一个构建产出需要凭据或手动切换才能上线时，wizard 负责必须由人类完成的那一半。当你不确定哪个 Skill 适合当前时刻，[ask-matt](https://aihero.dev/skills-ask-matt) 为你路由。
+> `wizard` 是一个随时可用的独立工具，位于自动化停止、人类必须点击的边界线上。其最近邻是 [setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills)，因为两者都旨在让仓库进入可用状态。那个配置此 Skill 集，而 `wizard` 为所有其他事物生成初始化路径。它也与 [implement](https://aihero.dev/skills-implement) 搭档：当一个构建产出需要凭据或手动切换才能上线时，wizard 覆盖只有人类才能完成的步骤。当你不确定哪个 Skill 适合当前时刻，[ask-matt](https://aihero.dev/skills-ask-matt) 为你路由。

@@ -28,7 +28,7 @@
 
 - **模块（module）**、**接口（interface）**、**深度（depth）**、**接缝（seam）**、**适配器（adapter）**、**杠杆（leverage）**、**局部性（locality）**
 - 设计原则：删除测试、"接口即测试面"、"一个适配器=假设的接缝，两个=真实的"
-- 领域语言来自 `CONTEXT.md`：如果术语表中定义了"Order"，则谈论"订单接收模块"而非"FooBarHandler"
+- 领域语言来自 `GLOSSARY.md`：如果术语表中定义了"Order"，则谈论"订单接收模块"而非"FooBarHandler"
 
 ### 四、三阶段流程
 
@@ -38,7 +38,7 @@
 
 - 如果用户指明了方向（模块、子系统、痛点），直接采纳。
 - 否则，回溯大量提交历史（`git log --oneline`）寻找热点文件。
-- 先阅读项目的 `CONTEXT.md` 和相关区域的 ADR。
+- 先阅读项目的 `GLOSSARY.md` 和相关区域的 ADR。
 - 然后启动一个子 Agent 遍历代码库，有机地探索并记录摩擦点。
 
 #### 阶段二：呈现候选方案（HTML 报告）
@@ -61,8 +61,8 @@
 
 用户选定一个候选方案后，调用 `grilling` 技能遍历决策树。副作用在决策明确时即时发生，调用 `domain-modeling` 保持领域模型更新：
 
-- 为深化模块命名了新概念？添加到 `CONTEXT.md`。
-- 对话中澄清了一个模糊术语？立即更新 `CONTEXT.md`。
+- 为深化模块命名了新概念？添加到 `GLOSSARY.md`。
+- 对话中澄清了一个模糊术语？立即更新 `GLOSSARY.md`。
 - 用户以充分理由拒绝了候选方案？提议记录为 ADR。
 - 想探索深化模块的替代接口？调用 `codebase-design` 的 design-it-twice 模式。
 
@@ -131,14 +131,14 @@
 > This command is _informed_ by the project's domain model and built on a shared design vocabulary:
 >
 > - Call the Skill tool with "codebase-design" for the architecture vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and its principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real"). Use these terms exactly in every suggestion, and don't drift into "component," "service," "API," or "boundary."
-> - The domain language in `CONTEXT.md` gives names to good seams; ADRs in `docs/adr/` record decisions this command should not re-litigate.
+> - The domain language in `GLOSSARY.md` gives names to good seams; ADRs in `docs/adr/` record decisions this command should not re-litigate.
 ```
 ```
 <!--翻译-->
 > 此命令由项目的领域模型提供信息，并构建在共享的设计词汇之上：
 >
 > - 调用 Skill 工具使用 "codebase-design" 获取架构词汇（**模块**、**接口**、**深度**、**接缝**、**适配器**、**杠杆**、**局部性**）及其原则（删除测试、"接口即测试面"、"一个适配器=假设的接缝，两个=真实的"）。在每条建议中精确使用这些术语，不要滑向"组件"、"服务"、"API"或"边界"等词汇。
-> - `CONTEXT.md` 中的领域语言为好的接缝命名；`docs/adr/` 中的 ADR 记录了此命令不应重新争论的决策。
+> - `GLOSSARY.md` 中的领域语言为好的接缝命名；`docs/adr/` 中的 ADR 记录了此命令不应重新争论的决策。
 ```
 
 ```
@@ -166,7 +166,7 @@
 
 ```
 <!--原文-->
-> Read the project's domain glossary (`CONTEXT.md`) and any ADRs in the area you're touching first.
+> Read the project's domain glossary (`GLOSSARY.md`) and any ADRs in the area you're touching first.
 >
 > Then spawn a sub-agent to walk the codebase. Don't follow rigid heuristics; explore organically and note where you experience friction:
 >
@@ -178,7 +178,7 @@
 ```
 ```
 <!--翻译-->
-> 首先阅读项目的领域术语表（`CONTEXT.md`）和你要接触的区域中任何相关的 ADR。
+> 首先阅读项目的领域术语表（`GLOSSARY.md`）和你要接触的区域中任何相关的 ADR。
 >
 > 然后启动一个子 Agent 遍历代码库。不要遵循僵化的启发式规则；有机地探索并记录你在何处遇到摩擦：
 >
@@ -247,22 +247,31 @@
 <!--原文-->
 > End the report with a **Top recommendation** section: which candidate you'd tackle first and why.
 >
-> **Use CONTEXT.md vocabulary for the domain, and the `/codebase-design` vocabulary for the architecture.** If `CONTEXT.md` defines "Order," talk about "the Order intake module," not "the FooBarHandler," and not "the Order service."
+> **Use GLOSSARY.md vocabulary for the domain, and the `/codebase-design` vocabulary for the architecture.** If `GLOSSARY.md` defines "Order," talk about "the Order intake module," not "the FooBarHandler," and not "the Order service."
 ```
 ```
 <!--翻译-->
 > 报告以**最佳推荐**部分结束：你会首先处理哪个候选方案以及原因。
 >
-> **使用 CONTEXT.md 的词汇处理领域，使用 `/codebase-design` 的词汇处理架构。** 如果 `CONTEXT.md` 定义了 "Order"，就谈论"订单接收模块"，而非 "FooBarHandler"，也非"订单服务"。
+> **使用 GLOSSARY.md 的词汇处理领域，使用 `/codebase-design` 的词汇处理架构。** 如果 `GLOSSARY.md` 定义了 "Order"，就谈论"订单接收模块"，而非 "FooBarHandler"，也非"订单服务"。
 ```
 
 ```
 <!--原文-->
-> **ADR conflicts**: if a candidate contradicts an existing ADR, only surface it when the friction is real enough to warrant revisiting the ADR. Mark it clearly in the card (e.g. a warning callout: _"contradicts ADR-0007, but worth reopening because..."_). Don't list every theoretical refactor an ADR forbids.
+> **ADR conflicts**: if a candidate contradicts an existing ADR, only surface it when the friction is real enough to warrant revisiting the ADR. Mark it clearly in the card (e.g. a warning callout: _"contradicts ADR-0007, but worth reopening because…"_). Don't list every theoretical refactor an ADR forbids.
 ```
 ```
 <!--翻译-->
 > **ADR 冲突**：如果候选方案与现有 ADR 矛盾，仅在实际摩擦足够真实、值得重新审视 ADR 时才提及。在卡片中清晰标注（例如警告提示：_"与 ADR-0007 矛盾，但值得重新讨论因为……"_）。不要列出 ADR 禁止的每一个理论上的重构。
+```
+
+```
+<!--原文-->
+> See [HTML-REPORT.md](HTML-REPORT.md) for the full HTML scaffold, diagram patterns, and styling guidance.
+```
+```
+<!--翻译-->
+> 完整的 HTML 脚手架、图表模式和样式指南请参阅 [HTML-REPORT.md](HTML-REPORT.md)。
 ```
 
 ```
@@ -282,8 +291,8 @@
 >
 > Side effects happen inline as decisions crystallize; call the Skill tool with "domain-modeling" to keep the domain model current as you go:
 >
-> - **Naming a deepened module after a concept not in `CONTEXT.md`?** Add the term to `CONTEXT.md`. Create the file lazily if it doesn't exist.
-> - **Sharpening a fuzzy term during the conversation?** Update `CONTEXT.md` right there.
+> - **Naming a deepened module after a concept not in `GLOSSARY.md`?** Add the term to `GLOSSARY.md`. Create the file lazily if it doesn't exist.
+> - **Sharpening a fuzzy term during the conversation?** Update `GLOSSARY.md` right there.
 > - **User rejects the candidate with a load-bearing reason?** Offer an ADR, framed as: _"Want me to record this as an ADR so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer to avoid re-suggesting the same thing; skip ephemeral reasons ("not worth it right now") and self-evident ones.
 > - **Want to explore alternative interfaces for the deepened module?** Call the Skill tool with "codebase-design" and use its design-it-twice parallel sub-agent pattern.
 ```
@@ -295,8 +304,8 @@
 >
 > 副作用在决策明确时即时发生；调用 Skill 工具使用 "domain-modeling" 在过程中保持领域模型最新：
 >
-> - **为深化模块以 `CONTEXT.md` 中不存在的概念命名？** 将该术语添加到 `CONTEXT.md`。如果文件不存在则懒创建它。
-> - **在对话中澄清了一个模糊术语？** 立即更新 `CONTEXT.md`。
+> - **为深化模块以 `GLOSSARY.md` 中不存在的概念命名？** 将该术语添加到 `GLOSSARY.md`。如果文件不存在则懒创建它。
+> - **在对话中澄清了一个模糊术语？** 立即更新 `GLOSSARY.md`。
 > - **用户以充分理由拒绝了候选方案？** 提供 ADR，措辞为：_"需要我将此记录为 ADR 以便未来的架构审查不会重新建议它吗？"_ 仅在理由确实会被未来探索者需要以避免重新建议同一事物时才提供；跳过短暂的（"现在不值得"）和不言自明的理由。
 > - **想探索深化模块的替代接口？** 调用 Skill 工具使用 "codebase-design" 并使用其 design-it-twice 并行子 Agent 模式。
 ```

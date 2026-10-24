@@ -18,7 +18,7 @@
 
 ### 问题格式
 
-每轮中的每个问题有固定格式：带编号、以 `❓` 开头的标题、正文、以及 Agent 在单独 `➡️` 行上给出的**推荐答案**。这种格式使得用户可以按编号回答整轮问题（如"1 是，2 选第二个选项，3 否，原因是..."），而不必逐题引用回原文。
+每轮中的每个问题有固定格式：带编号、以 `❓` 开头的标题、正文、以及 Agent 在单独 `➡️` 行上给出的**推荐答案**，并要求把问题写成回答"是"即接受推荐答案的措辞。这种格式使得用户可以按编号回答整轮问题（如"1 是，2 选第二个选项，3 否，原因是..."），而不必逐题引用回原文。
 
 需要注意的一个已知粗糙点：推荐答案有时会**反对**问题本身的措辞，这时同意推荐答案意味着对问题回答"否"。当这种情况发生时，直接回答推荐答案并说明即可。
 
@@ -32,7 +32,7 @@
 
 ### 与其他 Skill 的关系
 
-本 Skill 文档涵盖机制本身（设计树、前沿、轮次、问题格式、事实 vs 决策）。具体的会话长度、如何处理无法通过对话解答的问题、如何避免盲目点头等问题在 grill-me 文档中解决。CONTEXT.md 和 ADR 的写入在 grill-with-docs 文档中解决。
+本 Skill 文档涵盖机制本身（设计树、前沿、轮次、问题格式、事实 vs 决策）。具体的会话长度、如何处理无法通过对话解答的问题、如何避免盲目点头等问题在 grill-me 文档中解决。GLOSSARY.md 和 ADR 的写入在 grill-with-docs 文档中解决。
 
 ### 与 grill-me、grill-with-docs 的选择
 
@@ -75,10 +75,10 @@
 ## 第二部分：原文与翻译
 
 <!--原文-->
-> `grilling` is the interview loop that stress-tests a plan, a decision, or an idea before anyone acts on it. It maps the subject as a **design tree**: every decision branches into the decisions that hang off it, and interviews you branch by branch until nothing is left silently assumed.
+> `grilling` is the interview loop that stress-tests a plan, a decision, or an idea before anyone acts on it. It maps the subject as a **design tree**: every decision branches into the decisions that hang off it, and interviews you branch by branch until no assumption stays unstated.
 
 <!--翻译-->
-> `grilling` 是一个访谈循环，在任何人行动之前对计划、决策或想法进行压力测试。它将主题映射为一棵**设计树**：每个决策分支出依赖于它的子决策，然后逐个分支进行访谈，直到没有任何被默默假设的东西留下。
+> `grilling` 是一个访谈循环，在任何人行动之前对计划、决策或想法进行压力测试。它将主题映射为一棵**设计树**：每个决策分支出依赖于它的子决策，然后逐个分支进行访谈，直到没有任何假设未被言明。
 
 <!--原文-->
 > It does not ask one question at a time, and it does not ask everything at once. Each **round** asks the whole **frontier**: every decision whose prerequisites are already settled, and nothing else. Two questions never share a round if one depends on the other; a question that hinges on an answer still open belongs to a later round. Your answers settle decisions, the frontier moves outward, and the next round asks what that unblocked. Thirteen questions typically land in about three rounds rather than thirteen.
@@ -87,58 +87,58 @@
 > 它不会一次问一个问题，也不会一次性问完所有问题。每个**轮次**询问整个**前沿**：所有前置条件已确定的决策，仅此而已。如果两个问题相互依赖，它们绝不会共享一个轮次；一个答案还悬而未决的问题属于后续轮次。你的回答确定决策，前沿向外移动，下一轮询问被解锁的内容。13 个问题通常只需约 3 轮，而非 13 轮。
 
 <!--原文-->
-> Three ideas carry the whole skill. The **design tree** is the model of the subject: decisions with decisions hanging off them. The **frontier** is the set of decisions whose prerequisites are all settled: the only questions that can honestly be asked yet. A **round** is one frontier, asked in full and answered in full.
+> The skill rests on three ideas. The **design tree** is the model of the subject: decisions with decisions hanging off them. The **frontier** is the set of decisions whose prerequisites are all settled: the only questions the agent can ask yet. A **round** is one frontier, asked in full and answered in full.
 
 <!--翻译-->
-> 三个概念承载了整个 Skill。**设计树**是对主题的建模：层层嵌套的决策。**前沿**是所有前置条件已确定的决策集合：当前唯一可以诚实提出的问题。一个**轮次**就是一个前沿，完整提出并完整回答。
+> 这个 Skill 建立在三个概念之上。**设计树**是对主题的建模：层层嵌套的决策。**前沿**是所有前置条件已确定的决策集合：当前 Agent 唯一可以提出的问题。一个**轮次**就是一个前沿，完整提出并完整回答。
 
 <!--原文-->
-> Inside a round every question arrives in a fixed shape: numbered and titled behind a `❓`, then the body, then the agent's recommended answer alone on a `➡️` line. That is what makes a round answerable by number ("1 yes, 2 the second option, 3 no, here's why") instead of by quoting questions back.
+> Inside a round, every question has a fixed format: numbered and titled behind a `❓`, then the body, then the agent's recommended answer alone on a `➡️` line. This format lets you answer a round by number ("1 yes, 2 the second option, 3 no, here's why") instead of by quoting questions back.
 
 <!--翻译-->
-> 一轮中的每个问题都有固定格式：带编号、以 `❓` 开头的标题、正文，以及 Agent 的推荐答案单独放在 `➡️` 行上。这使得整轮可以通过编号回答（"1 是，2 第二个选项，3 否，原因是..."），而不必逐题引用回原文。
+> 在一轮之内，每个问题都有固定格式：带编号、以 `❓` 开头的标题、正文，以及 Agent 的推荐答案单独放在 `➡️` 行上。这种格式让你可以通过编号回答整轮（"1 是，2 第二个选项，3 否，原因是..."），而不必逐题引用回原文。
 
 <!--原文-->
-> The other half of the design is the split between facts and decisions. Facts are the skill's own job: when a frontier question needs something the environment can settle, it dispatches a sub-agent to go and find out rather than asking you. It does not block on that; only the questions downstream of a running exploration wait. Decisions are yours, and it must wait for them. An agent running `grilling` that answers its own decisions has broken the skill, not interpreted it liberally. The session ends when the frontier is empty, and it will not act on what you agreed until you confirm you have reached a shared understanding.
+> The other half of the design is the split between facts and decisions. Facts are the skill's own job. When a frontier question needs something the environment can settle, the agent dispatches a sub-agent to find out rather than asking you. The round does not wait for that research; only the questions that depend on it wait. Decisions are yours, and the agent must wait for them. An agent running `grilling` that answers its own decisions has broken the skill. The session ends when the frontier is empty. The agent then waits for you to confirm a shared understanding before it acts on what you agreed.
 
 <!--翻译-->
-> 设计的另一半是事实与决策的分工。**事实**是 Skill 自己的工作：当前沿问题需要环境能解决的信息时，它派发子 Agent 去查找，而非问你。它不会因此阻塞；只有依赖于正在进行的探索的下游问题才会等待。**决策**是你的，它必须等待。一个运行 `grilling` 的 Agent 如果自己回答了自己的决策问题，那是破坏了 Skill，而非自由解读。当前沿为空时会话结束，且在用户确认达成共享理解之前，它不会对你同意的事项采取行动。
+> 设计的另一半是事实与决策的分工。**事实**是 Skill 自己的工作。当前沿问题需要环境能解决的信息时，Agent 会派发子 Agent 去查明，而不是问你。整轮不会等待这项调研；只有依赖它的问题才会等待。**决策**是你的，Agent 必须等待。一个运行 `grilling` 的 Agent 如果自己回答了自己的决策，那就是破坏了 Skill。当前沿为空时，会话结束。之后 Agent 会等待你确认双方达成共享理解，然后才对你同意的事项采取行动。
 
 <!--原文-->
-> The honest limit: the frontier is the agent's judgement, not a computed graph. It can put two questions in one round and only afterwards discover that one answer should have changed the other. There is no guard against that beyond telling it, which reopens the affected branch in the next round.
+> The frontier has one limit. The agent chooses it by judgement; it does not compute it from a graph. So it can put two questions in one round and only later find that one answer should have changed the other. The only guard is to tell it. That reopens the affected branch in the next round.
 
 <!--翻译-->
-> 诚实限制：前沿是 Agent 的判断，而非计算出的图。它可能将两个问题放在同一轮，之后才发现一个答案本应改变另一个。对此除直接告诉它之外没有防护措施，它会在下一轮重新打开受影响的分支。
+> 前沿有一个限制。它是 Agent 凭判断选出的，而不是从图中计算出来的。所以它可能把两个问题放进同一轮，之后才发现一个答案本应改变另一个。唯一的防护就是直接告诉它。它会在下一轮重新打开受影响的分支。
 
 <!--原文-->
-> The round-based default is genuinely contested. Practitioners who read slowly, who work in a second language, or who use the sequential format as focus scaffolding all report the one-at-a-time rhythm is better for them, and the opt-out is supported rather than tolerated.
+> Not everyone prefers the round-based default. Users who read slowly, who work in a second language, or who use the sequential format to help them focus report that one question at a time works better for them. The opt-out is a supported setting, not a workaround.
 
 <!--翻译-->
-> 基于轮次的默认方式确实存在争议。阅读速度慢的用户、非母语工作者、或将逐题格式作为专注支架的用户都报告逐题模式更适合他们，这个退出选项是被支持的，而非仅仅是容忍的。
+> 并非所有人都偏好基于轮次的默认方式。阅读速度慢的用户、用第二语言工作的用户、或借助逐题格式来帮助自己专注的用户都报告说，一次问一个问题对他们效果更好。这个退出选项是一项受支持的设置，而不是变通办法。
 
 <!--原文-->
-> Asking a whole round at once must lose the questions my earlier answers would have raised. Doesn't it? This is the most common objection to the round design, and the frontier is the answer to it: a round only ever contains questions that do not depend on each other, so no answer in a round can invalidate another question in that round. Answers still reshape everything downstream: the next round is recomputed, not pre-written.
+> Asking a whole round at once must lose the questions my earlier answers would have raised. Doesn't it? This is the most common objection to rounds, and the frontier answers it. A round only contains questions that do not depend on each other, so no answer in a round can invalidate another question in that round. Your answers still change what comes after them, because the agent works out each next round from scratch.
 
 <!--翻译-->
-> 一次性问整轮问题一定会丢失我早期答案本会引发的问题。不是吗？这是对轮次设计最常见的质疑，而前沿就是回答：一轮只包含彼此不依赖的问题，因此轮内任何答案都不会使轮内其他问题失效。但答案确实会重塑下游一切：下一轮是重新计算的，而非预先写好的。
+> 一次性问整轮问题一定会丢失我早期答案本会引发的问题。不是吗？这是对轮次最常见的质疑，而前沿就是它的答案。一轮只包含彼此不依赖的问题，因此轮内任何答案都不会使轮内其他问题失效。你的答案仍然会改变它们之后的内容，因为 Agent 会从头推算出每一轮。
 
 <!--原文-->
-> A confirmation gate exists precisely for this: the skill is not finished when the frontier empties, it is finished when you say the understanding is shared. Weaker and faster models still break it; this is reported most often on lower-effort or non-frontier models, which collapse "interview until shared understanding" into a couple of questions and an outline.
+> The confirmation gate exists for this. The skill is finished when you say the understanding is shared, not when the frontier empties. Weaker and faster models still skip the gate. Users report this most often on lower-effort or non-frontier models, which collapse "interview until shared understanding" into a couple of questions and an outline.
 
 <!--翻译-->
-> 确认门正是为此存在：前沿清空不意味着 Skill 完成，你说理解已共享才算完成。较弱和较快的模型仍会突破它；这在低努力度或非前沿模型上最常被报告，它们将"访谈到共享理解为止"坍缩为几个问题和一份大纲。
+> 确认门正是为此而存在。当你说理解已共享时，Skill 才算完成，而不是当前沿清空时。较弱和较快的模型仍会跳过这道门。用户最常在低努力度或非前沿模型上报告这一点，它们将"访谈到共享理解为止"坍缩为几个问题和一份大纲。
 
 <!--原文-->
-> It answered its own questions instead of asking me. That is a bug in the run, not the intended behaviour, and it was the reason facts and decisions were separated in the skill's text.
+> It answered its own questions instead of asking me. That is a bug in the run, and it is the reason the skill's text separates facts from decisions.
 
 <!--翻译-->
-> 它自己回答了自己的问题，而不是问我。这是运行中的 bug，不是预期行为，这也是事实和决策在 Skill 文本中被分离的原因。
+> 它自己回答了自己的问题，而不是问我。这是运行中的一个 bug，这也是 Skill 文本把事实与决策分开的原因。
 
 <!--原文-->
-> Can I cap the number of questions? No, and a cap is deliberately out of scope. Some plans need three questions and some need fifty; a fixed ceiling either truncates the hard case or feels arbitrary on the easy one. Steering in plain language is the intended control: tell it to wrap up, or stop and accept the plan where it stands.
+> Can I cap the number of questions? No, and a cap is out of scope on purpose. Some plans need three questions and some need fifty; a fixed ceiling either truncates the hard case or feels arbitrary on the easy one. The intended control is plain language. Tell it to wrap up, or stop and accept the plan where it stands.
 
 <!--翻译-->
-> 能否限制问题数量？不能，这是有意不在范围内的。一些计划需要 3 个问题，一些需要 50 个；固定上限要么截断困难情况，要么在简单情况下显得武断。用自然语言引导是预期的控制方式：告诉它收尾，或停下来接受当前计划。
+> 能否限制问题数量？不能，上限是有意排除在范围之外的。一些计划需要 3 个问题，一些需要 50 个；固定上限要么截断困难情况，要么在简单情况下显得武断。预期的控制方式是用自然语言。告诉它收尾，或停下来接受当前计划。
 
 <!--原文-->
 > `grilling` is a **primitive**, not a step you schedule: the single source of truth for the interview technique, kept in one place so every skill that needs an interview reaches for it instead of inventing one.

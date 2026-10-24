@@ -64,12 +64,12 @@
 
 <!--原文-->
 > ## Phase 1: Build a feedback loop
-> **This is the skill.** Everything else is mechanical. If you have a **tight** pass/fail signal for the bug (one that goes red on _this_ bug), you will find the cause... If you don't have one, no amount of staring at code will save you.
+> **This is the skill.** Everything else is mechanical. If you have a **tight** pass/fail signal for the bug (one that goes red on _this_ bug), you will find the cause; bisection, hypothesis-testing, and instrumentation all just consume it. If you don't have one, no amount of staring at code will save you.
 > Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give up.**
 
 <!--翻译-->
 > ## Phase 1: 构建反馈循环
-> **这就是整个 Skill。**其他一切都是机械的。如果你有一个针对此 Bug 的**紧致**通过/失败信号（一个在此 Bug 上变红的信号），你就会找到原因...如果没有，看再多代码也救不了你。
+> **这就是整个 Skill。**其他一切都是机械的。如果你有一个针对此 Bug 的**紧致**通过/失败信号（一个在此 Bug 上变红的信号），你就会找到原因；二分查找、假设检验和插桩都只是在消费它。如果没有，看再多代码也救不了你。
 > 在这里投入不成比例的努力。**要激进。要有创意。拒绝放弃。**
 
 <!--原文-->
